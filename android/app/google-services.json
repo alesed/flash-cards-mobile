@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "223347116582",
+    "project_id": "flutter-flashcards-83556",
+    "storage_bucket": "flutter-flashcards-83556.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223347116582:android:94fb59dd5a3f409c1ab4e7",
+        "android_client_info": {
+          "package_name": "com.example.flashcards"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "223347116582-l793mem332rhp8vii3mjl3fi42ad0ocq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOLf34NlPBaiAA79-I6U98vc8sdXboBNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223347116582-l793mem332rhp8vii3mjl3fi42ad0ocq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
