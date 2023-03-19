@@ -1,0 +1,3 @@
+class UserService {
+  void createNewUser() {}
+}

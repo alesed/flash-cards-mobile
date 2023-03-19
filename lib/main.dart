@@ -1,19 +1,20 @@
+import 'package:flashcards/locator.dart';
+import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MainApp());
+  setupLocator();
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+        body: SetsPage(), //RegisterPage(),
       ),
     );
   }
