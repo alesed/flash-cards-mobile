@@ -1,7 +1,6 @@
-import 'package:flashcards/auth/model/authentication_credential.dart';
+import 'package:flashcards/features/auth/models/authentication_credential.dart';
 
 class AuthenticationService {
-  //TODO should be async?
   bool login(AuthenticationCredential authenticationCredential) {
     return false;
   }

@@ -67,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '223347116582',
     projectId: 'flutter-flashcards-83556',
     storageBucket: 'flutter-flashcards-83556.appspot.com',
-    iosClientId: '223347116582-nd8sneqpg2eblm9j5kqhtosqglea02os.apps.googleusercontent.com',
+    iosClientId:
+        '223347116582-nd8sneqpg2eblm9j5kqhtosqglea02os.apps.googleusercontent.com',
     iosBundleId: 'com.example.flashcards',
   );
 
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '223347116582',
     projectId: 'flutter-flashcards-83556',
     storageBucket: 'flutter-flashcards-83556.appspot.com',
-    iosClientId: '223347116582-nd8sneqpg2eblm9j5kqhtosqglea02os.apps.googleusercontent.com',
+    iosClientId:
+        '223347116582-nd8sneqpg2eblm9j5kqhtosqglea02os.apps.googleusercontent.com',
     iosBundleId: 'com.example.flashcards',
   );
 }

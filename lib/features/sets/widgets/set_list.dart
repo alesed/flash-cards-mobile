@@ -1,7 +1,5 @@
-import 'package:flashcards/game/widget/game_page.dart';
+import 'package:flashcards/features/game/pages/game_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class SetList extends StatelessWidget {
   const SetList({super.key});
@@ -15,7 +13,7 @@ class SetList extends StatelessWidget {
         itemBuilder: (_, index) => Card(
               child: ListTile(
                 title: Text(sets[index]),
-                trailing: //TODO should be here PopupMenuButton or multiple different buttons for edit, delete etc.?
+                trailing: // TODO: should be PopupMenuButton
                     IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const GamePage()),

@@ -1,17 +1,19 @@
-import 'package:flashcards/navigation/widgets/custom_navigation_drawer.dart';
+import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-class StatisticsPage extends StatelessWidget {
-  const StatisticsPage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomNavigationDrawer(),
-      appBar: AppBar(title: Text("Statistics")),
-      body: Text("stats."),
+      appBar: AppBar(
+        title: Text("Home"),
+      ),
+      body: Placeholder(),
     );
   }
 }

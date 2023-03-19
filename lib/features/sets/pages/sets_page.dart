@@ -1,8 +1,6 @@
-import 'package:flashcards/navigation/widgets/custom_navigation_drawer.dart';
-import 'package:flashcards/sets/widget/set_list.dart';
+import 'package:flashcards/features/sets/widgets/set_list.dart';
+import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class SetsPage extends StatelessWidget {
   const SetsPage({super.key});
