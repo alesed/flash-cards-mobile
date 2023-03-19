@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flashcards/features/home/pages/home_page.dart';
+import 'package:flashcards/widgets/form_input.dart';
 import 'package:flutter/material.dart';
 
 import '../../../firebase_options.dart';
@@ -28,15 +29,24 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Form(
             key: _formKey,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(32.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildUsernameInput(usernameController),
+                  FormInput(
+                    controller: usernameController,
+                    validator: _getUsernameValidator,
+                    hintText: "Username",
+                  ),
                   SizedBox(
                     height: 15,
                   ),
-                  _buildPasswordInput(passwordController),
+                  FormInput(
+                    controller: passwordController,
+                    validator: _getPasswordValidator,
+                    hintText: "Password",
+                    obscureText: true,
+                  ),
                   SizedBox(
                     height: 30,
                   ),
@@ -48,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           print("Hello: ${usernameController.text}");
                         }
                       },
-                      child: Text("Submit"))
+                      child: Text("Sign Up"))
                 ],
               ),
             )),
@@ -56,40 +66,22 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildUsernameInput(TextEditingController textEditingController) {
-    return TextFormField(
-      controller: textEditingController,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Enter username';
-        }
-        return null;
-      },
-      decoration: InputDecoration(hintText: "Username"),
-    );
+  String? _getUsernameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter username';
+    }
+    return null;
   }
 
-  Widget _buildPasswordInput(TextEditingController passwordControler) {
-    return TextFormField(
-      controller: passwordControler,
-      validator: (value) {
-        if (value == null) {
-          return 'Enter password';
-        }
-        if (value.length < 4) {
-          return 'Password is too short.';
-        }
-        return null;
-      },
-      decoration: InputDecoration(hintText: "Password"),
-    );
+  String? _getPasswordValidator(String? value) {
+    if (value == null) {
+      return 'Enter password';
+    }
+    if (value.length < 4) {
+      return 'Password is too short.';
+    }
+    return null;
   }
-
-  // Widget _buildPasswordInput(){
-  //   return TextFormField(
-  //     controller: ,
-  //   )
-  // }
 
   Future<DocumentReference> addUser(String username) async {
     await Future.delayed(Duration(seconds: 1));
