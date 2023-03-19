@@ -11,6 +11,8 @@ dependencies:
   firebase_core: ^2.7.1
   get_it: ^7.2.0
   rxdart: ^0.27.7
+  swipe_cards: ^2.0.0+1
+
   flutter:
     sdk: flutter
 
