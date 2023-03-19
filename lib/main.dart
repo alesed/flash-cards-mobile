@@ -1,4 +1,4 @@
-import 'package:flashcards/game/widget/game_page.dart';
+import 'package:flashcards/features/game/pages/game_page.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flutter/material.dart';
