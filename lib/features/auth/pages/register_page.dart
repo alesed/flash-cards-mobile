@@ -1,13 +1,9 @@
-import 'dart:math';
-
-import 'package:flashcards/navigation/widgets/home_page.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import '../../firebase_options.dart';
+import 'package:flashcards/features/home/pages/home_page.dart';
+import 'package:flutter/material.dart';
+
+import '../../../firebase_options.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

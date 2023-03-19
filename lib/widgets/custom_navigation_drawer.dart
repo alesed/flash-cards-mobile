@@ -1,10 +1,8 @@
-import 'package:flashcards/auth/widgets/login_page.dart';
-import 'package:flashcards/navigation/widgets/home_page.dart';
-import 'package:flashcards/sets/widget/sets_page.dart';
-import 'package:flashcards/statistics/widget/statistics_page.dart';
+import 'package:flashcards/features/auth/pages/login_page.dart';
+import 'package:flashcards/features/home/pages/home_page.dart';
+import 'package:flashcards/features/sets/pages/sets_page.dart';
+import 'package:flashcards/features/statistics/pages/statistics_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class CustomNavigationDrawer extends StatelessWidget {
   const CustomNavigationDrawer({super.key});

@@ -1,6 +1,5 @@
 import 'package:flashcards/locator.dart';
-import 'package:flashcards/auth/widgets/register_page.dart';
-import 'package:flashcards/sets/widget/sets_page.dart';
+import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
