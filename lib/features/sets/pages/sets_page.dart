@@ -1,3 +1,4 @@
+import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
 import 'package:flashcards/features/sets/widgets/set_list.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,13 @@ class SetsPage extends StatelessWidget {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => SetsUpsertPage()));
+            },
+            child: const Icon(Icons.add),
+          ),
           drawer: CustomNavigationDrawer(),
           appBar: AppBar(
               title: Text("Card sets"),

@@ -12,6 +12,7 @@ dependencies:
   get_it: ^7.2.0
   rxdart: ^0.27.7
   swipe_cards: ^2.0.0+1
+  uuid: ^3.0.7
 
   flutter:
     sdk: flutter

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-import '../../sets/models/card.dart' as model;
+import '../../sets/models/card_model.dart' as model;
 import '../../../widgets/custom_navigation_drawer.dart';
 
 const _CARD_SIZE = 300.0;
@@ -23,7 +23,8 @@ class _GamePageState extends State<GamePage> {
     super.initState();
     for (int i = 0; i < 5; i++) {
       _swipeItems.add(SwipeItem(
-          content: model.Card(backText: "Back: $i", frontText: "Front: $i"),
+          content:
+              model.CardModel(backText: "Back: $i", frontText: "Front: $i"),
           likeAction: () => print("Liked"),
           nopeAction: () => print("disliked")));
     }
