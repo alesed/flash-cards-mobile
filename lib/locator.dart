@@ -5,5 +5,5 @@ import 'package:get_it/get_it.dart';
 GetIt getIt = GetIt.instance;
 void setupLocator() {
   getIt.registerSingleton<AuthenticationService>(AuthenticationService());
-  getIt.registerSingleton(SetsService());
+  getIt.registerFactory(() => SetsService());
 }

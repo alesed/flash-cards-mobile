@@ -42,6 +42,9 @@ class _SetsUpsertPageState extends State<SetsUpsertPage> {
               : "Update set")),
       body: ListView(children: [
         TextField(
+          onSubmitted: (value) {
+            setsService.setName = value;
+          },
           style: TextStyle(fontSize: 30),
         ),
         _buildAccessibilityChooser(),
@@ -56,7 +59,7 @@ class _SetsUpsertPageState extends State<SetsUpsertPage> {
 
   Widget _buildCardList() {
     return StreamBuilder<List<CardModel>>(
-      stream: getIt.get<SetsService>().addedCards,
+      stream: setsService.addedCards,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text("Err: ${snapshot.error.toString()}");
@@ -117,7 +120,7 @@ class _SetsUpsertPageState extends State<SetsUpsertPage> {
         IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            getIt<SetsService>().deleteCard(cardModel.id);
+            setsService.deleteCard(cardModel.id);
           },
           color: Colors.red,
         )

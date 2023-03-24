@@ -8,12 +8,13 @@ class SetsService {
   int ownerId = 1;
   String setName = "Default";
   Accessibility accessibility = Accessibility.private;
-  //final Set<CardModel> cardSet = {};
   final cardList = BehaviorSubject<List<CardModel>>.seeded([]);
 
   void createNewSet() {
-    //TODO: clear
+    //TODO: maybe bad architecture?
   }
+
+  void loadSet(String id) {}
 
   Stream<List<CardModel>> get addedCards => cardList.stream;
 

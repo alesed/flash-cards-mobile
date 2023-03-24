@@ -1,3 +1,4 @@
+import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
 import 'package:flashcards/features/sets/widgets/set_list.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
@@ -30,8 +31,12 @@ class SetsPage extends StatelessWidget {
                 ),
               ])),
           body: const TabBarView(children: [
-            SetList(),
-            Text("dataosdifjoa"),
+            SetList(
+              accessibility: Accessibility.private,
+            ),
+            SetList(
+              accessibility: Accessibility.public,
+            ),
           ]),
         ));
   }
