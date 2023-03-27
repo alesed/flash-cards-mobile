@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flashcards/features/game/pages/game_page.dart';
 import 'package:flashcards/features/sets/models/set_actions.dart';
+import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/accessibility.dart';
@@ -61,6 +62,11 @@ class SetList extends StatelessWidget {
                       showDialog(context: context, builder: (_) => deleteAlert);
                       break;
                     case SetAction.edit:
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SetsUpsertPage(
+                          cardSetIdToModify: "1",
+                        ),
+                      ));
                       // TODO: Handle this case.
                       break;
                     case SetAction.info:

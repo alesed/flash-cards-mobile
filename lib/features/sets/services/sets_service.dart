@@ -1,36 +1,52 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
-import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SetsService {
-  int ownerId = 1;
-  String setName = "Default";
-  Accessibility accessibility = Accessibility.private;
-  final cardList = BehaviorSubject<List<CardModel>>.seeded([]);
+import '../models/card_set_model.dart';
 
-  void createNewSet() {
-    //TODO: maybe bad architecture?
+class SetsService {
+  final cardSet = BehaviorSubject<CardSetModel>();
+
+  void createEmptySet() {
+    cardSet.add(CardSetModel(
+        ownerId: 1,
+        setName: "",
+        accessibility: Accessibility.private,
+        cardList: []));
   }
 
-  void loadSet(String id) {}
+  Future<void> loadSet(String id) async {
+    await Future.delayed(
+        const Duration(seconds: 3)); //TODO: remove (just simulates network)
+    cardSet.add(CardSetModel(
+        ownerId: 1,
+        setName: "loaded set",
+        accessibility: Accessibility.public,
+        cardList: [CardModel(id: "id", frontText: "asdf", backText: "iiii")]));
+  }
 
-  Stream<List<CardModel>> get addedCards => cardList.stream;
+  Stream<CardSetModel> get cardSetStream => cardSet.stream;
+
+  void updateCardSet(CardSetModel cardSet) {
+    this.cardSet.add(cardSet);
+  }
 
   void addCard(CardModel card) {
-    final lastSet = cardList.value;
-    cardList.add(lastSet..add(card));
+    final currSet = cardSet.value;
+    cardSet.add(currSet.copyWith(cardList: currSet.cardList..add(card)));
   }
 
   void deleteCard(String cardId) {
-    final lastList = cardList.value;
-    cardList.add(lastList..removeWhere((card) => card.id == cardId));
+    final currSet = cardSet.value;
+    cardSet.add(currSet.copyWith(
+        cardList: currSet.cardList..removeWhere((card) => card.id == cardId)));
   }
 
   void updateCard(String cardId, CardModel newCard) {
-    final lastList = cardList.value;
-    lastList[lastList.indexWhere((card) => card.id == cardId)] = newCard;
-    cardList.add(lastList);
+    final currSet = cardSet.value;
+    final currCards = cardSet.value.cardList;
+    currCards[currCards.indexWhere((element) => element.id == cardId)] =
+        newCard;
+    cardSet.add(currSet.copyWith(cardList: currCards));
   }
 }

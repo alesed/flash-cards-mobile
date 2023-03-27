@@ -1,34 +1,23 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
-import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/services/sets_service.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
-class SetsUpsertPage extends StatefulWidget {
-  int? cardSetIdToModify;
-  SetsUpsertPage({super.key, this.cardSetIdToModify});
+import '../models/card_set_model.dart';
 
-  @override
-  State<SetsUpsertPage> createState() => _SetsUpsertPageState();
-}
+const _EMPTY_ERR_MSG = "This field cannot be empty";
 
-class _SetsUpsertPageState extends State<SetsUpsertPage> {
-  Accessibility _accessibilityState = Accessibility.private;
+class SetsUpsertPage extends StatelessWidget {
   final setsService = getIt.get<SetsService>();
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.cardSetIdToModify == null) {
-      setsService.createNewSet();
+  String? cardSetIdToModify;
+  SetsUpsertPage({super.key, this.cardSetIdToModify}) {
+    if (cardSetIdToModify == null) {
+      setsService.createEmptySet();
     } else {
-      //TODO: load set
+      setsService.loadSet(cardSetIdToModify!);
     }
   }
 
@@ -37,57 +26,65 @@ class _SetsUpsertPageState extends State<SetsUpsertPage> {
     return Scaffold(
       drawer: CustomNavigationDrawer(),
       appBar: AppBar(
-          title: Text(widget.cardSetIdToModify == null
-              ? "Create new set"
-              : "Update set")),
-      body: ListView(children: [
-        TextField(
-          onSubmitted: (value) {
-            setsService.setName = value;
-          },
-          style: TextStyle(fontSize: 30),
-        ),
-        _buildAccessibilityChooser(),
-        ElevatedButton(
-            onPressed: () => setsService.addCard(CardModel(
-                id: Uuid().v4(), frontText: "frontText", backText: "backText")),
-            child: Text("+")),
-        _buildCardList(),
-      ]),
+          title: Text(
+              cardSetIdToModify == null ? "Create new set" : "Update set")),
+      body: StreamBuilder<CardSetModel>(
+          stream: setsService.cardSetStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text("Err.: ${snapshot.error.toString()}");
+            }
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            final cardSet = snapshot.data!;
+            return ListView(children: [
+              _buildNameField(cardSet),
+              _buildAccessibilityChooser(cardSet),
+              _buildAddCardButton(),
+              _buildCardList(cardSet.cardList),
+            ]);
+          }),
     );
   }
 
-  Widget _buildCardList() {
-    return StreamBuilder<List<CardModel>>(
-      stream: setsService.addedCards,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text("Err: ${snapshot.error.toString()}");
-        }
-        if (!snapshot.hasData) {
-          return CircularProgressIndicator();
-        }
-        final cardList = snapshot.data!;
-        return ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: cardList.length,
-            itemBuilder: (_, index) {
-              return _buildCardModifier(cardList[index]);
-            });
+  ElevatedButton _buildAddCardButton() {
+    return ElevatedButton(
+        onPressed: () => setsService
+            .addCard(CardModel(id: Uuid().v4(), frontText: "", backText: "")),
+        child: Text("+"));
+  }
+
+  TextField _buildNameField(CardSetModel cardSet) {
+    return TextField(
+      controller: TextEditingController(text: cardSet.setName),
+      onSubmitted: (value) {
+        setsService.updateCardSet(cardSet.copyWith(setName: value));
       },
+      style: TextStyle(fontSize: 30),
+      decoration: InputDecoration(
+          labelText: "Card set name",
+          errorText: cardSet.setName.isEmpty ? _EMPTY_ERR_MSG : null),
     );
   }
 
-  Row _buildAccessibilityChooser() {
+  Widget _buildCardList(List<CardModel> cardList) {
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: cardList.length,
+        itemBuilder: (_, index) {
+          return _buildCardModifier(cardList[index]);
+        });
+  }
+
+  Row _buildAccessibilityChooser(CardSetModel cardSet) {
     return Row(children: [
       Text("Accessibility: "),
       DropdownButton<Accessibility>(
-        value: _accessibilityState,
+        value: cardSet.accessibility,
         onChanged: (value) {
-          setState(() {
-            _accessibilityState = value!;
-          });
+          setsService.updateCardSet(cardSet.copyWith(accessibility: value));
         },
         items: Accessibility.values
             .map<DropdownMenuItem<Accessibility>>(
@@ -110,12 +107,20 @@ class _SetsUpsertPageState extends State<SetsUpsertPage> {
             setsService.updateCard(
                 cardModel.id, cardModel.copyWith(frontText: value));
           },
-          decoration: InputDecoration(hintText: "Card's front text"),
+          decoration: InputDecoration(
+              errorText: cardModel.frontText.isEmpty ? _EMPTY_ERR_MSG : null,
+              labelText: "Front text"),
         ),
         TextField(
           controller: TextEditingController(text: cardModel.backText),
-          onChanged: (value) {},
-          decoration: InputDecoration(hintText: "Card's back text"),
+          onSubmitted: (value) {
+            setsService.updateCard(
+                cardModel.id, cardModel.copyWith(backText: value));
+          },
+          decoration: InputDecoration(
+            errorText: cardModel.backText.isEmpty ? _EMPTY_ERR_MSG : null,
+            labelText: "Back text",
+          ),
         ),
         IconButton(
           icon: Icon(Icons.delete),
