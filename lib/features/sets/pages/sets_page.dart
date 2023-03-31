@@ -1,6 +1,9 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
+import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
+import 'package:flashcards/features/sets/services/sets_service.dart';
 import 'package:flashcards/features/sets/widgets/set_list.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -30,12 +33,14 @@ class SetsPage extends StatelessWidget {
                   text: "Public sets",
                 ),
               ])),
-          body: const TabBarView(children: [
+          body: TabBarView(children: [
             SetList(
-              accessibility: Accessibility.private,
+              setsFilter: SetsFilter(
+                  accessibility: Accessibility.private, justOwn: true),
             ),
             SetList(
-              accessibility: Accessibility.public,
+              setsFilter: SetsFilter(
+                  accessibility: Accessibility.public, justOwn: false),
             ),
           ]),
         ));

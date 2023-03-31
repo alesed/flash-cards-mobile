@@ -1,6 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
+
 import 'accessibility.dart';
 import 'card_model.dart';
 
+part 'card_set_model.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class CardSetModel {
   final int ownerId;
   final String setName;
@@ -24,4 +29,9 @@ class CardSetModel {
         accessibility: accessibility ?? this.accessibility,
         cardList: cardList ?? this.cardList);
   }
+
+  factory CardSetModel.fromJson(Map<String, dynamic> json) =>
+      _$CardSetModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CardSetModelToJson(this);
 }

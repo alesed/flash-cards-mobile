@@ -1,23 +1,25 @@
 import 'dart:ui';
 
 import 'package:flashcards/features/game/pages/game_page.dart';
+import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/models/set_actions.dart';
+import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
+import 'package:flashcards/features/sets/services/sets_service.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 
 import '../models/accessibility.dart';
 
 class SetList extends StatelessWidget {
-  final Accessibility accessibility;
-  const SetList({super.key, required this.accessibility});
+  final _setsService = getIt<SetsService>();
+
+  final SetsFilter setsFilter;
+  SetList({super.key, required this.setsFilter});
 
   @override
   Widget build(BuildContext context) {
-    List<String> privateSets = ["Biology", "Physics"];
-    List<String> publicSets = ["Math", "Math 2", "Psychology"];
-    return _buildSetList(
-        accessibility == Accessibility.private ? privateSets : publicSets,
-        context);
+    return _buildSetList(context);
   }
 
   Widget _buildDeleteAlert(String set) {
@@ -46,50 +48,62 @@ class SetList extends StatelessWidget {
     );
   }
 
-  ListView _buildSetList(List<String> sets, BuildContext context) {
-    return ListView.separated(
-        separatorBuilder: (_, index) => Divider(),
-        itemCount: sets.length,
-        itemBuilder: (_, index) {
-          final deleteAlert = _buildDeleteAlert(sets[index]);
-          return Card(
-            child: ListTile(
-              title: Text(sets[index]),
-              trailing: PopupMenuButton<SetAction>(
-                onSelected: (value) {
-                  switch (value) {
-                    case SetAction.delete:
-                      showDialog(context: context, builder: (_) => deleteAlert);
-                      break;
-                    case SetAction.edit:
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SetsUpsertPage(
-                          cardSetIdToModify: "1",
-                        ),
-                      ));
-                      // TODO: Handle this case.
-                      break;
-                    case SetAction.info:
-                      // TODO: Handle this case.
-                      break;
-                    case SetAction.statistics:
-                      // TODO: Handle this case.
-                      break;
-                  }
-                },
-                itemBuilder: (_) => <PopupMenuEntry<SetAction>>[
-                  _buildPopUpItem(SetAction.statistics, Icons.auto_graph,
-                      "Show statistics"),
-                  _buildPopUpItem(SetAction.edit, Icons.edit, "Edit set"),
-                  _buildPopUpItem(SetAction.info, Icons.info, "Show info"),
-                  _buildPopUpItem(SetAction.delete, Icons.delete, "Delete set"),
-                ],
-              ),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const GamePage()),
-              ),
-            ),
-          );
+  Widget _buildSetList(BuildContext context) {
+    return StreamBuilder(
+        stream: _setsService.getFilteredSetsStream(setsFilter),
+        builder: (context, snapshot) {
+          final setList = snapshot.data!;
+          return ListView.separated(
+              separatorBuilder: (_, index) => Divider(),
+              itemCount: setList.length,
+              itemBuilder: (_, index) {
+                final deleteAlert = _buildDeleteAlert(setList[index].setName);
+                return Card(
+                  child: ListTile(
+                    title: Text(setList[index].setName),
+                    trailing: PopupMenuButton<SetAction>(
+                      onSelected: (value) {
+                        switch (value) {
+                          case SetAction.delete:
+                            showDialog(
+                                context: context, builder: (_) => deleteAlert);
+                            break;
+                          case SetAction.edit:
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => SetsUpsertPage(
+                                cardSetIdToModify: "1",
+                              ),
+                            ));
+                            // TODO: Handle this case.
+                            break;
+                          case SetAction.info:
+                            // TODO: Handle this case.
+                            break;
+                          case SetAction.statistics:
+                            // TODO: Handle this case.
+                            break;
+                        }
+                      },
+                      itemBuilder: (_) => <PopupMenuEntry<SetAction>>[
+                        _buildPopUpItem(SetAction.statistics, Icons.auto_graph,
+                            "Show statistics"),
+                        _buildPopUpItem(
+                            SetAction.info, Icons.info, "Show info"),
+                        if (setList[index].ownerId == 5) ...[
+                          //TODO: add real owner id
+                          _buildPopUpItem(
+                              SetAction.edit, Icons.edit, "Edit set"),
+                          _buildPopUpItem(
+                              SetAction.delete, Icons.delete, "Delete set"),
+                        ],
+                      ],
+                    ),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const GamePage()),
+                    ),
+                  ),
+                );
+              });
         });
   }
 

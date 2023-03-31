@@ -1,5 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+part 'card_model.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class CardModel {
   final String id;
   final String frontText;
@@ -13,4 +18,9 @@ class CardModel {
         frontText: frontText ?? this.frontText,
         backText: backText ?? this.backText);
   }
+
+  factory CardModel.fromJson(Map<String, dynamic> json) =>
+      _$CardModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CardModelToJson(this);
 }
