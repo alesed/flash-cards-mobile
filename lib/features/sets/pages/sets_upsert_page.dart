@@ -1,6 +1,7 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
-import 'package:flashcards/features/sets/services/sets_service.dart';
+import 'package:flashcards/features/sets/services/set_upsert_service.dart';
+import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +12,15 @@ import '../models/card_set_model.dart';
 const _EMPTY_ERR_MSG = "This field cannot be empty";
 
 class SetsUpsertPage extends StatelessWidget {
-  final setsService = getIt.get<SetsService>();
+  final _setUpsertService = getIt.get<SetUpsertService>();
+  final _setsManagerService = getIt.get<SetsManagerService>();
+
   String? cardSetIdToModify;
   SetsUpsertPage({super.key, this.cardSetIdToModify}) {
     if (cardSetIdToModify == null) {
-      setsService.createEmptySet();
+      _setUpsertService.createEmptySet();
     } else {
-      setsService.loadSet(cardSetIdToModify!);
+      _setUpsertService.loadSet(cardSetIdToModify!);
     }
   }
 
@@ -26,10 +29,18 @@ class SetsUpsertPage extends StatelessWidget {
     return Scaffold(
       drawer: CustomNavigationDrawer(),
       appBar: AppBar(
+          actions: <Widget>[
+            GestureDetector(
+              onTap: () {
+                _setsManagerService.storeSet(_setUpsertService.set);
+              },
+              child: Icon(Icons.save),
+            )
+          ],
           title: Text(
               cardSetIdToModify == null ? "Create new set" : "Update set")),
       body: StreamBuilder<CardSetModel>(
-          stream: setsService.cardSetStream,
+          stream: _setUpsertService.cardSetStream,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text("Err.: ${snapshot.error.toString()}");
@@ -50,7 +61,7 @@ class SetsUpsertPage extends StatelessWidget {
 
   ElevatedButton _buildAddCardButton() {
     return ElevatedButton(
-        onPressed: () => setsService
+        onPressed: () => _setUpsertService
             .addCard(CardModel(id: Uuid().v4(), frontText: "", backText: "")),
         child: Text("+"));
   }
@@ -59,7 +70,7 @@ class SetsUpsertPage extends StatelessWidget {
     return TextField(
       controller: TextEditingController(text: cardSet.setName),
       onSubmitted: (value) {
-        setsService.updateCardSet(cardSet.copyWith(setName: value));
+        _setUpsertService.updateCardSet(cardSet.copyWith(setName: value));
       },
       style: TextStyle(fontSize: 30),
       decoration: InputDecoration(
@@ -84,7 +95,8 @@ class SetsUpsertPage extends StatelessWidget {
       DropdownButton<Accessibility>(
         value: cardSet.accessibility,
         onChanged: (value) {
-          setsService.updateCardSet(cardSet.copyWith(accessibility: value));
+          _setUpsertService
+              .updateCardSet(cardSet.copyWith(accessibility: value));
         },
         items: Accessibility.values
             .map<DropdownMenuItem<Accessibility>>(
@@ -104,7 +116,7 @@ class SetsUpsertPage extends StatelessWidget {
         TextField(
           controller: TextEditingController(text: cardModel.frontText),
           onSubmitted: (value) {
-            setsService.updateCard(
+            _setUpsertService.updateCard(
                 cardModel.id, cardModel.copyWith(frontText: value));
           },
           decoration: InputDecoration(
@@ -114,7 +126,7 @@ class SetsUpsertPage extends StatelessWidget {
         TextField(
           controller: TextEditingController(text: cardModel.backText),
           onSubmitted: (value) {
-            setsService.updateCard(
+            _setUpsertService.updateCard(
                 cardModel.id, cardModel.copyWith(backText: value));
           },
           decoration: InputDecoration(
@@ -125,7 +137,7 @@ class SetsUpsertPage extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.delete),
           onPressed: () {
-            setsService.deleteCard(cardModel.id);
+            _setUpsertService.deleteCard(cardModel.id);
           },
           color: Colors.red,
         )

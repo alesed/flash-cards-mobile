@@ -7,13 +7,15 @@ part 'card_set_model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class CardSetModel {
+  final String id;
   final int ownerId;
   final String setName;
   final Accessibility accessibility;
   final List<CardModel> cardList;
 
   const CardSetModel(
-      {required this.ownerId,
+      {required this.id,
+      required this.ownerId,
       required this.setName,
       required this.accessibility,
       required this.cardList});
@@ -24,6 +26,7 @@ class CardSetModel {
       Accessibility? accessibility,
       List<CardModel>? cardList}) {
     return CardSetModel(
+        id: id,
         ownerId: ownerId ?? this.ownerId,
         setName: setName ?? this.setName,
         accessibility: accessibility ?? this.accessibility,

@@ -5,14 +5,16 @@ import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/models/set_actions.dart';
 import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
-import 'package:flashcards/features/sets/services/sets_service.dart';
+import 'package:flashcards/features/sets/services/set_upsert_service.dart';
+import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 
 import '../models/accessibility.dart';
 
 class SetList extends StatelessWidget {
-  final _setsService = getIt<SetsService>();
+  final _setsService = getIt<SetUpsertService>();
+  final _setsManagerService = getIt<SetsManagerService>();
 
   final SetsFilter setsFilter;
   SetList({super.key, required this.setsFilter});
@@ -50,8 +52,14 @@ class SetList extends StatelessWidget {
 
   Widget _buildSetList(BuildContext context) {
     return StreamBuilder(
-        stream: _setsService.getFilteredSetsStream(setsFilter),
+        stream: _setsManagerService.getFilteredSetsStream(setsFilter),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text("Err: ${snapshot.error.toString()}");
+          }
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
           final setList = snapshot.data!;
           return ListView.separated(
               separatorBuilder: (_, index) => Divider(),
@@ -71,7 +79,7 @@ class SetList extends StatelessWidget {
                           case SetAction.edit:
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => SetsUpsertPage(
-                                cardSetIdToModify: "1",
+                                cardSetIdToModify: setList[index].id,
                               ),
                             ));
                             // TODO: Handle this case.
@@ -89,7 +97,7 @@ class SetList extends StatelessWidget {
                             "Show statistics"),
                         _buildPopUpItem(
                             SetAction.info, Icons.info, "Show info"),
-                        if (setList[index].ownerId == 5) ...[
+                        if (setList[index].ownerId == 1) ...[
                           //TODO: add real owner id
                           _buildPopUpItem(
                               SetAction.edit, Icons.edit, "Edit set"),

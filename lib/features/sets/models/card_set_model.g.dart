@@ -7,6 +7,7 @@ part of 'card_set_model.dart';
 // **************************************************************************
 
 CardSetModel _$CardSetModelFromJson(Map<String, dynamic> json) => CardSetModel(
+      id: json['id'] as String,
       ownerId: json['owner_id'] as int,
       setName: json['set_name'] as String,
       accessibility: $enumDecode(_$AccessibilityEnumMap, json['accessibility']),
@@ -17,6 +18,7 @@ CardSetModel _$CardSetModelFromJson(Map<String, dynamic> json) => CardSetModel(
 
 Map<String, dynamic> _$CardSetModelToJson(CardSetModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'owner_id': instance.ownerId,
       'set_name': instance.setName,
       'accessibility': _$AccessibilityEnumMap[instance.accessibility]!,
