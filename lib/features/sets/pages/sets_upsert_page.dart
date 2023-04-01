@@ -29,14 +29,7 @@ class SetsUpsertPage extends StatelessWidget {
     return Scaffold(
       drawer: CustomNavigationDrawer(),
       appBar: AppBar(
-          actions: <Widget>[
-            GestureDetector(
-              onTap: () {
-                _setsManagerService.storeSet(_setUpsertService.set);
-              },
-              child: Icon(Icons.save),
-            )
-          ],
+          actions: <Widget>[_buildSaveBtn()],
           title: Text(
               cardSetIdToModify == null ? "Create new set" : "Update set")),
       body: StreamBuilder<CardSetModel>(
@@ -56,6 +49,30 @@ class SetsUpsertPage extends StatelessWidget {
               _buildCardList(cardSet.cardList),
             ]);
           }),
+    );
+  }
+
+  StreamBuilder<bool> _buildSaveBtn() {
+    return StreamBuilder(
+      stream: _setUpsertService.isSavedStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text("err: ${snapshot.error.toString()}");
+        }
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+        final isSaved = snapshot.data!;
+        if (!isSaved) {
+          return GestureDetector(
+            onTap: () {
+              _setUpsertService.saveSet(_setUpsertService.set);
+            },
+            child: Icon(Icons.save),
+          );
+        }
+        return Center(child: Text("Saved."));
+      },
     );
   }
 

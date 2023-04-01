@@ -33,8 +33,11 @@ class SetsManagerService {
         ])
   ]);
 
-  Future<void> storeSet(CardSetModel cardSetModel) async {
+  Future<void> saveSet(CardSetModel cardSetModel) async {
     //TODO: replace with push to db
+    await Future.delayed(const Duration(seconds: 1));
+    final allSetsUpdated = allSets.value;
+    allSetsUpdated.removeWhere((element) => element.id == cardSetModel.id);
     allSets.add(allSets.value..add(cardSetModel));
   }
 
