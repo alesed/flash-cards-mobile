@@ -1,5 +1,6 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
+import 'package:flashcards/features/sets/models/save_state.dart';
 import 'package:flashcards/features/sets/services/set_upsert_service.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
@@ -52,9 +53,9 @@ class SetsUpsertPage extends StatelessWidget {
     );
   }
 
-  StreamBuilder<bool> _buildSaveBtn() {
+  Widget _buildSaveBtn() {
     return StreamBuilder(
-      stream: _setUpsertService.isSavedStream,
+      stream: _setUpsertService.saveState,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text("err: ${snapshot.error.toString()}");
@@ -62,16 +63,20 @@ class SetsUpsertPage extends StatelessWidget {
         if (!snapshot.hasData) {
           return CircularProgressIndicator();
         }
-        final isSaved = snapshot.data!;
-        if (!isSaved) {
-          return GestureDetector(
-            onTap: () {
-              _setUpsertService.saveSet(_setUpsertService.set);
-            },
-            child: Icon(Icons.save),
-          );
+        final savedState = snapshot.data!;
+        switch (savedState) {
+          case SaveState.saved:
+            return Center(child: Text("Saved."));
+          case SaveState.saving:
+            return CircularProgressIndicator();
+          case SaveState.notSaved:
+            return GestureDetector(
+              onTap: () {
+                _setUpsertService.saveSet(_setUpsertService.set);
+              },
+              child: Icon(Icons.save),
+            );
         }
-        return Center(child: Text("Saved."));
       },
     );
   }

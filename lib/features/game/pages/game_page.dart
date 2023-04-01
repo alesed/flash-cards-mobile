@@ -1,3 +1,5 @@
+import 'package:flashcards/features/game/services/game_service.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -5,31 +7,31 @@ import 'package:swipe_cards/swipe_cards.dart';
 import 'package:uuid/uuid.dart';
 import '../../sets/models/card_model.dart' as model;
 import '../../../widgets/custom_navigation_drawer.dart';
+import '../../sets/models/card_model.dart';
 
 const _CARD_SIZE = 300.0;
 
 class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+  final String setId;
+  const GamePage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<GamePage> createState() => _GamePageState();
 }
 
 class _GamePageState extends State<GamePage> {
+  final _gameService = getIt.get<GameService>();
+
   MatchEngine? _matchEngine;
   final List<SwipeItem> _swipeItems = [];
   bool _cardFrontShowed = true;
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 5; i++) {
-      _swipeItems.add(SwipeItem(
-          content: model.CardModel(
-              id: Uuid().v4(), backText: "Back: $i", frontText: "Front: $i"),
-          likeAction: () => print("Liked"),
-          nopeAction: () => print("disliked")));
-    }
-    _matchEngine = MatchEngine(swipeItems: _swipeItems);
+    _gameService.newGame(widget.setId);
   }
 
   @override
@@ -39,32 +41,54 @@ class _GamePageState extends State<GamePage> {
           title: Text("Practising \"Biology\""),
         ),
         drawer: CustomNavigationDrawer(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: _CARD_SIZE,
-                child: SwipeCards(
-                    matchEngine: _matchEngine!,
-                    onStackFinished: () {
-                      print("finished");
-                    },
-                    itemBuilder: (_, index) {
-                      return Center(
-                          child: _buildCard(_cardFrontShowed == true
-                              ? _swipeItems[index].content.frontText
-                              : _swipeItems[index].content.backText));
-                    }),
-              ),
-              //_buildCard(),
-              SizedBox(
-                height: 50,
-              ),
-              _buildButtons(),
-            ],
+        body: StreamBuilder<List<CardModel>>(
+            stream: _gameService.restingCardsStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text("Err: ${snapshot.error.toString()}");
+              }
+              if (!snapshot.hasData) {
+                return CircularProgressIndicator();
+              }
+              final cardList = snapshot.data!;
+              for (final card in cardList) {
+                _swipeItems.add(SwipeItem(
+                    content: card,
+                    likeAction: () => _gameService.likeCard(card.id),
+                    nopeAction: () => _gameService.dislikeCard(card.id)));
+              }
+              _matchEngine = MatchEngine(swipeItems: _swipeItems);
+              return _buildPageLayout();
+            }));
+  }
+
+  Center _buildPageLayout() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: _CARD_SIZE,
+            child: SwipeCards(
+                matchEngine: _matchEngine!,
+                onStackFinished: () {
+                  print("finished");
+                },
+                itemBuilder: (_, index) {
+                  return Center(
+                      child: _buildCard(_cardFrontShowed == true
+                          ? _swipeItems[index].content.frontText
+                          : _swipeItems[index].content.backText));
+                }),
           ),
-        ));
+          //_buildCard(),
+          SizedBox(
+            height: 50,
+          ),
+          _buildButtons(),
+        ],
+      ),
+    );
   }
 
   Widget _buildButtons() {

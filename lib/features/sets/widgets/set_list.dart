@@ -107,7 +107,10 @@ class SetList extends StatelessWidget {
                       ],
                     ),
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const GamePage()),
+                      MaterialPageRoute(
+                          builder: (_) => GamePage(
+                                setId: setList[index].id,
+                              )),
                     ),
                   ),
                 );

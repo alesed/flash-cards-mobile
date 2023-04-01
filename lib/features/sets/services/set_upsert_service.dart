@@ -1,5 +1,6 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
+import 'package:flashcards/features/sets/models/save_state.dart';
 import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
@@ -10,7 +11,7 @@ import 'package:uuid/uuid.dart';
 import '../models/card_set_model.dart';
 
 class SetUpsertService {
-  final isSaved = BehaviorSubject.seeded(false);
+  final saveState = BehaviorSubject.seeded(SaveState.saved);
   final cardSet = BehaviorSubject<CardSetModel>();
 
   void createEmptySet() {
@@ -35,35 +36,35 @@ class SetUpsertService {
     await getIt
         .get<SetsManagerService>()
         .saveSet(cardSet.value); //TODO: same, should check?
-    isSaved.add(true);
+    saveState.add(SaveState.notSaved);
   }
 
   void saveSet(CardSetModel cardSetModel) async {
-    // TODO: could be nice, if we could delete last value, so the UI stream builder indicates "loading" state
+    saveState.add(SaveState.saving);
     await getIt<SetsManagerService>().saveSet(
         cardSetModel); //TODO: what if this is not successful? How to pass error?
-    isSaved.add(true);
+    saveState.add(SaveState.saved);
   }
 
   Stream<CardSetModel> get cardSetStream => cardSet.stream;
-  Stream<bool> get isSavedStream => isSaved.stream;
+  Stream<SaveState> get isSavedStream => saveState.stream;
 
   void updateCardSet(CardSetModel cardSet) {
     this.cardSet.add(cardSet);
-    isSaved.add(false);
+    saveState.add(SaveState.notSaved);
   }
 
   void addCard(CardModel card) {
     final currSet = cardSet.value;
     cardSet.add(currSet.copyWith(cardList: currSet.cardList..add(card)));
-    isSaved.add(false);
+    saveState.add(SaveState.notSaved);
   }
 
   void deleteCard(String cardId) {
     final currSet = cardSet.value;
     cardSet.add(currSet.copyWith(
         cardList: currSet.cardList..removeWhere((card) => card.id == cardId)));
-    isSaved.add(false);
+    saveState.add(SaveState.notSaved);
   }
 
   void updateCard(String cardId, CardModel newCard) {
@@ -72,6 +73,6 @@ class SetUpsertService {
     currCards[currCards.indexWhere((element) => element.id == cardId)] =
         newCard;
     cardSet.add(currSet.copyWith(cardList: currCards));
-    isSaved.add(false);
+    saveState.add(SaveState.notSaved);
   }
 }
