@@ -5,6 +5,8 @@ import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+const _MAX_CARD_STACK_COUNT = 3;
+
 class AnsweredCard {
   CardModel cardModel;
   AnswerState answerState;
@@ -16,26 +18,66 @@ class AnsweredCard {
       required this.timeToAnswer});
 }
 
+class CardToShow {
+  String textToShow;
+  int order;
+  CardModel originalCard;
+  CardToShow(
+      {required this.textToShow,
+      required this.order,
+      required this.originalCard});
+  CardToShow copyWith({String? textToShow}) {
+    return CardToShow(
+        textToShow: textToShow ?? this.textToShow,
+        originalCard: originalCard,
+        order: order);
+  }
+}
+
 class GameService {
-  List<CardModel> cardList = [];
+  bool _showingCardFront = true;
   List<AnsweredCard> answeredCardList = [];
-  final restingCards = BehaviorSubject<List<CardModel>>();
+  List<CardModel> allCardsList = [];
+  final cardsToShow = BehaviorSubject<List<CardToShow>>();
 
   void newGame(String setId) async {
-    final cardSet = await getIt.get<SetsManagerService>().getSetWithId(setId);
-    restingCards.add(cardSet.cardList);
+    final cardSet = await getIt.get<SetsManagerService>().getSetWithId(
+        setId); //TODO: modifies original list, will be solved later, when using db...
+    allCardsList = cardSet.cardList;
+    cardsToShow.add(allCardsList.asMap().entries.map((entry) {
+      int index = entry.key;
+      final card = entry.value;
+      return CardToShow(
+          textToShow: card.frontText, order: index + 1, originalCard: card);
+    }).toList());
   }
 
-  Stream<List<CardModel>> get restingCardsStream => restingCards.stream;
+  bool get showingCardFront => _showingCardFront;
+
+  int get setLength => allCardsList.length;
+
+  Stream<List<CardToShow>> get cardsToShowStream => cardsToShow.stream;
+
+  void turnCard() {
+    final cardsToShowList = cardsToShow.value.map((cardToShow) {
+      return cardToShow.copyWith(
+          textToShow: _showingCardFront
+              ? cardToShow.originalCard.backText
+              : cardToShow.originalCard.frontText);
+    }).toList();
+
+    cardsToShow.add(cardsToShowList);
+    _showingCardFront = !_showingCardFront;
+  }
 
   void removeRestingCard(String cardId) {
-    restingCards.add(
-        restingCards.value..removeWhere((element) => element.id == cardId));
+    cardsToShow.add(cardsToShow.value
+      ..removeWhere((cardToShow) => cardToShow.originalCard.id == cardId));
   }
 
   void likeCard(String cardId) {
     answeredCardList.add(AnsweredCard(
-        cardModel: cardList.firstWhere((element) => element.id == cardId),
+        cardModel: allCardsList.firstWhere((element) => element.id == cardId),
         answerState: AnswerState.liked,
         timeToAnswer: 1.0));
     removeRestingCard(cardId);
@@ -43,7 +85,7 @@ class GameService {
 
   void dislikeCard(String cardId) {
     answeredCardList.add(AnsweredCard(
-        cardModel: cardList.firstWhere((element) => element.id == cardId),
+        cardModel: allCardsList.firstWhere((element) => element.id == cardId),
         answerState: AnswerState.disliked,
         timeToAnswer: 1.0));
     removeRestingCard(cardId);

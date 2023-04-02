@@ -26,8 +26,6 @@ class _GamePageState extends State<GamePage> {
   final _gameService = getIt.get<GameService>();
 
   MatchEngine? _matchEngine;
-  final List<SwipeItem> _swipeItems = [];
-  bool _cardFrontShowed = true;
   @override
   void initState() {
     super.initState();
@@ -41,28 +39,34 @@ class _GamePageState extends State<GamePage> {
           title: Text("Practising \"Biology\""),
         ),
         drawer: CustomNavigationDrawer(),
-        body: StreamBuilder<List<CardModel>>(
-            stream: _gameService.restingCardsStream,
+        body: StreamBuilder<List<CardToShow>>(
+            stream: _gameService.cardsToShowStream,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Text("Err: ${snapshot.error.toString()}");
               }
               if (!snapshot.hasData) {
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               }
               final cardList = snapshot.data!;
-              for (final card in cardList) {
-                _swipeItems.add(SwipeItem(
-                    content: card,
-                    likeAction: () => _gameService.likeCard(card.id),
-                    nopeAction: () => _gameService.dislikeCard(card.id)));
+              if (cardList.isEmpty) {
+                return Center(child: Text("Finished!"));
               }
-              _matchEngine = MatchEngine(swipeItems: _swipeItems);
-              return _buildPageLayout();
+              final List<SwipeItem> swipeItems = [];
+              for (final card in cardList) {
+                swipeItems.add(SwipeItem(
+                    content: card,
+                    likeAction: () =>
+                        _gameService.likeCard(card.originalCard.id),
+                    nopeAction: () =>
+                        _gameService.dislikeCard(card.originalCard.id)));
+              }
+              _matchEngine = MatchEngine(swipeItems: swipeItems);
+              return _buildPageLayout(swipeItems);
             }));
   }
 
-  Center _buildPageLayout() {
+  Center _buildPageLayout(List<SwipeItem> swipeItems) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -71,14 +75,10 @@ class _GamePageState extends State<GamePage> {
             height: _CARD_SIZE,
             child: SwipeCards(
                 matchEngine: _matchEngine!,
-                onStackFinished: () {
-                  print("finished");
-                },
+                onStackFinished:
+                    () {}, // This is not used, because we are using stream builder and it is not working together...
                 itemBuilder: (_, index) {
-                  return Center(
-                      child: _buildCard(_cardFrontShowed == true
-                          ? _swipeItems[index].content.frontText
-                          : _swipeItems[index].content.backText));
+                  return Center(child: _buildCard(swipeItems[index].content));
                 }),
           ),
           //_buildCard(),
@@ -112,20 +112,38 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Widget _buildCard(String cardText) {
+  Widget _buildCard(CardToShow cardToShow) {
     return SizedBox(
       width: _CARD_SIZE,
       height: _CARD_SIZE,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-        onPressed: () {
-          setState(() {
-            _cardFrontShowed = !_cardFrontShowed;
-          });
-        },
-        child: Text(
-          cardText,
-          style: TextStyle(color: Colors.black),
+        onPressed: () => _gameService.turnCard(),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    _gameService.showingCardFront ? "Front" : "Back",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  Spacer(),
+                  Text(
+                    "${cardToShow.order}/${_gameService.setLength}",
+                    style: TextStyle(color: Colors.black),
+                  )
+                ],
+              ),
+              Spacer(),
+              Text(
+                cardToShow.textToShow,
+                style: TextStyle(color: Colors.black),
+              ),
+              Spacer(),
+            ],
+          ),
         ),
       ),
     );

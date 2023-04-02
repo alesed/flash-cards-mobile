@@ -21,7 +21,9 @@ class SetsManagerService {
         setName: "Private set",
         accessibility: Accessibility.private,
         cardList: [
-          CardModel(id: "3", frontText: "asdffront", backText: "basdack")
+          CardModel(
+              id: Uuid().v4(), frontText: "asdffront", backText: "basdack"),
+          CardModel(id: Uuid().v4(), frontText: "iiii", backText: "bbbb")
         ]),
     CardSetModel(
         id: Uuid().v4(),
@@ -29,7 +31,10 @@ class SetsManagerService {
         setName: "Public set",
         accessibility: Accessibility.public,
         cardList: [
-          CardModel(id: "3", frontText: "public front", backText: "public back")
+          CardModel(
+              id: Uuid().v4(),
+              frontText: "public front",
+              backText: "public back")
         ])
   ]);
 
