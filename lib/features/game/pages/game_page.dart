@@ -1,8 +1,36 @@
-import 'package:flashcards/widgets/custom_navigation_drawer.dart';
+import 'package:flashcards/features/game/services/game_service.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:swipe_cards/swipe_cards.dart';
+import 'package:uuid/uuid.dart';
+import '../../sets/models/card_model.dart' as model;
+import '../../../widgets/custom_navigation_drawer.dart';
+import '../../sets/models/card_model.dart';
 
-class GamePage extends StatelessWidget {
-  const GamePage({super.key});
+const _CARD_SIZE = 300.0;
+
+class GamePage extends StatefulWidget {
+  final String setId;
+  const GamePage({
+    super.key,
+    required this.setId,
+  });
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  final _gameService = getIt.get<GameService>();
+
+  MatchEngine? _matchEngine;
+  @override
+  void initState() {
+    super.initState();
+    _gameService.newGame(widget.setId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,18 +39,56 @@ class GamePage extends StatelessWidget {
           title: Text("Practising \"Biology\""),
         ),
         drawer: CustomNavigationDrawer(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildCard(),
-              SizedBox(
-                height: 50,
-              ),
-              _buildButtons()
-            ],
+        body: StreamBuilder<List<CardToShow>>(
+            stream: _gameService.cardsToShowStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text("Err: ${snapshot.error.toString()}");
+              }
+              if (!snapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              }
+              final cardList = snapshot.data!;
+              if (cardList.isEmpty) {
+                return Center(child: Text("Finished!"));
+              }
+              final List<SwipeItem> swipeItems = [];
+              for (final card in cardList) {
+                swipeItems.add(SwipeItem(
+                    content: card,
+                    likeAction: () =>
+                        _gameService.likeCard(card.originalCard.id),
+                    nopeAction: () =>
+                        _gameService.dislikeCard(card.originalCard.id)));
+              }
+              _matchEngine = MatchEngine(swipeItems: swipeItems);
+              return _buildPageLayout(swipeItems);
+            }));
+  }
+
+  Center _buildPageLayout(List<SwipeItem> swipeItems) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: _CARD_SIZE,
+            child: SwipeCards(
+                matchEngine: _matchEngine!,
+                onStackFinished:
+                    () {}, // This is not used, because we are using stream builder and it is not working together...
+                itemBuilder: (_, index) {
+                  return Center(child: _buildCard(swipeItems[index].content));
+                }),
           ),
-        ));
+          //_buildCard(),
+          SizedBox(
+            height: 50,
+          ),
+          _buildButtons(),
+        ],
+      ),
+    );
   }
 
   Widget _buildButtons() {
@@ -30,24 +96,54 @@ class GamePage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Spacer(),
-        ElevatedButton(onPressed: () {}, child: Text("Yes")),
+        ElevatedButton(
+            onPressed: () {
+              _matchEngine?.currentItem?.like();
+            },
+            child: Text("Yes")),
         Spacer(),
-        ElevatedButton(onPressed: () {}, child: Text("No")),
+        ElevatedButton(
+            onPressed: () {
+              _matchEngine?.currentItem?.nope();
+            },
+            child: Text("No")),
         Spacer(),
       ],
     );
   }
 
-  Widget _buildCard() {
-    return Container(
-      width: 300,
-      height: 300,
+  Widget _buildCard(CardToShow cardToShow) {
+    return SizedBox(
+      width: _CARD_SIZE,
+      height: _CARD_SIZE,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-        onPressed: () {},
-        child: Text(
-          "asdfk",
-          style: TextStyle(color: Colors.black),
+        onPressed: () => _gameService.turnCard(),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    _gameService.showingCardFront ? "Front" : "Back",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  Spacer(),
+                  Text(
+                    "${cardToShow.order}/${_gameService.setLength}",
+                    style: TextStyle(color: Colors.black),
+                  )
+                ],
+              ),
+              Spacer(),
+              Text(
+                cardToShow.textToShow,
+                style: TextStyle(color: Colors.black),
+              ),
+              Spacer(),
+            ],
+          ),
         ),
       ),
     );

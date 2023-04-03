@@ -1,0 +1,4 @@
+enum Accessibility {
+  public,
+  private,
+}
