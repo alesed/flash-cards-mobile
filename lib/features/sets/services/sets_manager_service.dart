@@ -1,3 +1,6 @@
+import 'package:flashcards/features/db/models/collection.dart';
+import 'package:flashcards/features/db/services/db_service.dart';
+import 'package:flashcards/locator.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
@@ -7,6 +10,7 @@ import '../models/card_set_model.dart';
 import '../models/sets_filter.dart';
 
 class SetsManagerService {
+  final _dbService = getIt.get<DbService>();
   final allSets = BehaviorSubject.seeded([
     //TODO: connect with db
     CardSetModel(
@@ -39,14 +43,13 @@ class SetsManagerService {
   ]);
 
   Future<void> saveSet(CardSetModel cardSetModel) async {
-    //TODO: replace with push to db
-    await Future.delayed(const Duration(seconds: 1));
-    final allSetsUpdated = allSets.value;
-    allSetsUpdated.removeWhere((element) => element.id == cardSetModel.id);
-    allSets.add(allSets.value..add(cardSetModel));
+    await _dbService.add(
+        Collection.cardSets, cardSetModel.id, cardSetModel.toJson());
   }
 
-  Future<CardSetModel> getSetWithId(String id) {
+  Future<CardSetModel> getSetWithId(String id) async {
+    final setJson = await _dbService.getDocument(Collection.cardSets, id);
+    return CardSetModel.fromJson(setJson);
     return Future.delayed(const Duration(seconds: 2)).then(
         ((value) => allSets.value.firstWhere((element) => element.id == id)));
   }
