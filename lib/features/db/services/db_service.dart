@@ -11,16 +11,26 @@ class DbService {
 
   Stream<List<Map<String, dynamic>>> getCollectionStream(
       Collection collection) {
-    //TODO: some filter?
     return db
         .collection(collection.name)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
   }
 
-  Future<Map<String, dynamic>?> getDocument(
+  Future<void> deleteDocument(Collection collection, String docId) {
+    return db.collection(collection.name).doc(docId).delete();
+  }
+
+  Future<Map<String, dynamic>> getDocument(
       Collection collection, String docId) async {
-    final docSnapshot = await db.collection(collection.name).doc(docId).get();
-    return docSnapshot.data();
+    try {
+      final docSnapshot = await db.collection(collection.name).doc(docId).get();
+      if (docSnapshot.data() == null) {
+        return Future.error("No data in db query.");
+      }
+      return docSnapshot.data()!;
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 }

@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flashcards/features/game/pages/game_page.dart';
+import 'package:flashcards/firebase_options.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupLocator();
   runApp(MainApp());
 }
