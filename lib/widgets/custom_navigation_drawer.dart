@@ -1,7 +1,9 @@
-import 'package:flashcards/features/auth/pages/login_page.dart';
+import 'package:flashcards/features/auth/pages/auth_page.dart';
+import 'package:flashcards/features/auth/services/auth_service.dart';
 import 'package:flashcards/features/home/pages/home_page.dart';
 import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flashcards/features/statistics/pages/statistics_page.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 
 class CustomNavigationDrawer extends StatelessWidget {
@@ -9,11 +11,13 @@ class CustomNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _authService = getIt<AuthenticationService>();
+
     return Drawer(
       child: ListView(padding: EdgeInsets.zero, children: [
         const DrawerHeader(
-          child: Text('Drawer header'),
           decoration: BoxDecoration(color: Colors.grey),
+          child: Text('Drawer header'),
         ),
         ListTile(
           title: Text("Home"),
@@ -47,10 +51,8 @@ class CustomNavigationDrawer extends StatelessWidget {
               "Logout",
               style: TextStyle(color: Colors.red),
             ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const LoginPage()));
+            onTap: () async {
+              await _authService.logout();
             })
       ]),
     );
