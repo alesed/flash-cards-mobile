@@ -7,7 +7,7 @@ class AuthenticationService {
 
   AuthenticationService() : _firebaseAuth = FirebaseAuth.instance;
 
-  Stream<User?> get currentUser => _authStateChanges;
+  Stream<User?> get authState => _authStateChanges;
 
   Future<void> login(
     String email,

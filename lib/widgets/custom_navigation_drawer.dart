@@ -53,6 +53,11 @@ class CustomNavigationDrawer extends StatelessWidget {
             ),
             onTap: () async {
               await _authService.logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => AuthPage()),
+                (route) => false,
+              );
             })
       ]),
     );
