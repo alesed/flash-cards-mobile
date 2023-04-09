@@ -24,7 +24,7 @@ class SetList extends StatelessWidget {
     return _buildSetList(context);
   }
 
-  Widget _buildDeleteAlert(String set) {
+  Widget _buildDeleteAlert(CardSetModel set) {
     Widget cancelButton = Builder(builder: (context) {
       return TextButton(
         child: Text("Cancel"),
@@ -33,16 +33,19 @@ class SetList extends StatelessWidget {
         },
       );
     });
-    Widget deleteButton = TextButton(
-      child: Text("Delete"),
-      onPressed: () {
-        //TODO: Delete set
-      },
-    );
+    Widget deleteButton = Builder(builder: (context) {
+      return TextButton(
+          child: Text("Delete"),
+          onPressed: () {
+            Navigator.pop(context);
+            _setsManagerService.deleteSet(set.id);
+            //TODO: better delete UI (show status and error)
+          });
+    });
 
     return AlertDialog(
-      title: Text("AlertDialog"),
-      content: Text("Do you really want to delete set $set? "),
+      title: Text("Delete ${set.setName}"),
+      content: Text("Do you really want to delete set ${set.setName}? "),
       actions: [
         cancelButton,
         deleteButton,
@@ -65,7 +68,7 @@ class SetList extends StatelessWidget {
               separatorBuilder: (_, index) => Divider(),
               itemCount: setList.length,
               itemBuilder: (_, index) {
-                final deleteAlert = _buildDeleteAlert(setList[index].setName);
+                final deleteAlert = _buildDeleteAlert(setList[index]);
                 return Card(
                   child: ListTile(
                     title: Text(setList[index].setName),
