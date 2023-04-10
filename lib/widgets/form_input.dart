@@ -19,8 +19,24 @@ class FormInput extends StatelessWidget {
     return TextFormField(
       controller: controller,
       validator: validator,
-      decoration: InputDecoration(hintText: hintText),
+      decoration: _getDecoration(hintText),
       obscureText: obscureText,
     );
   }
+}
+
+InputDecoration _getDecoration(String? hintText) {
+  return InputDecoration(
+    hintText: hintText,
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.grey.shade300,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.grey.shade500,
+      ),
+    ),
+  );
 }

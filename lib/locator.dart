@@ -1,4 +1,4 @@
-import 'package:flashcards/features/auth/services/authentication_service.dart';
+import 'package:flashcards/features/auth/services/auth_service.dart';
 import 'package:flashcards/features/db/services/db_service.dart';
 import 'package:flashcards/features/game/services/game_service.dart';
 import 'package:flashcards/features/sets/services/set_upsert_service.dart';
