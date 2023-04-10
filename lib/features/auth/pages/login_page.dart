@@ -44,7 +44,9 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 48),
               _buildDivider(),
               SizedBox(height: 48),
-              _buildSocialSitesLogin(),
+              _buildSocialSitesLogin(() async {
+                await authService.loginWithGoogle();
+              }),
             ],
           ),
         ),
@@ -112,7 +114,7 @@ Row _buildDivider() {
   );
 }
 
-Row _buildSocialSitesLogin() {
+Row _buildSocialSitesLogin(Function() googleLoginFn) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
@@ -120,7 +122,7 @@ Row _buildSocialSitesLogin() {
         width: 106,
         height: 106,
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: googleLoginFn,
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.grey.shade300),
           ),
