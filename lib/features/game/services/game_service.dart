@@ -40,10 +40,17 @@ class GameService {
   List<CardModel> allCardsList = [];
   final cardsToShow = BehaviorSubject<List<CardToShow>>();
 
-  void newGame(String setId) async {
-    final cardSet = await getIt.get<SetsManagerService>().getSetWithId(
-        setId); //TODO: modifies original list, will be solved later, when using db...
-    allCardsList = cardSet.cardList;
+  void newGameWithFailedCards() {
+    final failedCards = answeredCardList
+        .where((element) => element.answerState == AnswerState.disliked)
+        .map((e) => e.cardModel)
+        .toList();
+    _initNewGame(failedCards);
+  }
+
+  void _initNewGame(List<CardModel> cards) {
+    answeredCardList = [];
+    allCardsList = cards;
     cardsToShow.add(allCardsList.asMap().entries.map((entry) {
       int index = entry.key;
       final card = entry.value;
@@ -52,9 +59,24 @@ class GameService {
     }).toList());
   }
 
+  void newGame(String setId) async {
+    final cardSet = await getIt.get<SetsManagerService>().getSetWithId(
+        setId); //TODO: modifies original list, will be solved later, when using db...
+    _initNewGame(cardSet.cardList);
+  }
+
   bool get showingCardFront => _showingCardFront;
 
   int get setLength => allCardsList.length;
+
+  int get likedCardsCount => getAnsweredCardWithStateCount(AnswerState.liked);
+  int get dislikedCardsCount =>
+      getAnsweredCardWithStateCount(AnswerState.disliked);
+  int getAnsweredCardWithStateCount(AnswerState answerState) {
+    return answeredCardList
+        .where((element) => element.answerState == answerState)
+        .length;
+  }
 
   Stream<List<CardToShow>> get cardsToShowStream => cardsToShow.stream;
 

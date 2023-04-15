@@ -50,7 +50,7 @@ class _GamePageState extends State<GamePage> {
               }
               final cardList = snapshot.data!;
               if (cardList.isEmpty) {
-                return Center(child: Text("Finished!"));
+                return _buildFinishWidget();
               }
               final List<SwipeItem> swipeItems = [];
               for (final card in cardList) {
@@ -66,7 +66,29 @@ class _GamePageState extends State<GamePage> {
             }));
   }
 
-  Center _buildPageLayout(List<SwipeItem> swipeItems) {
+  Center _buildFinishWidget() {
+    return Center(
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Spacer(),
+        Text("Finished!", style: TextStyle(fontSize: 20)),
+        Spacer(),
+        ElevatedButton(
+            onPressed: () => _gameService.newGame(widget.setId),
+            child: Text("Play again with all cards.")),
+        if (_gameService.dislikedCardsCount > 0)
+          ElevatedButton(
+              onPressed: () => _gameService.newGameWithFailedCards(),
+              child: Text("Play again with failed cards")),
+        Text(
+            "Correctly answered cards: ${_gameService.likedCardsCount} / ${_gameService.setLength}"),
+        Spacer(),
+      ],
+    ));
+  }
+
+  Widget _buildPageLayout(List<SwipeItem> swipeItems) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
