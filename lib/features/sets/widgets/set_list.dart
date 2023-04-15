@@ -4,6 +4,7 @@ import 'package:flashcards/features/game/pages/game_page.dart';
 import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/models/set_actions.dart';
 import 'package:flashcards/features/sets/models/sets_filter.dart';
+import 'package:flashcards/features/sets/pages/set_info_page.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
 import 'package:flashcards/features/sets/services/set_upsert_service.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
@@ -88,6 +89,10 @@ class SetList extends StatelessWidget {
                             // TODO: Handle this case.
                             break;
                           case SetAction.info:
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => SetInfoPage(
+                                      setToShow: setList[index],
+                                    )));
                             // TODO: Handle this case.
                             break;
                           case SetAction.statistics:
