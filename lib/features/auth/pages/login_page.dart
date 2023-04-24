@@ -1,6 +1,8 @@
 import 'package:flashcards/features/auth/services/auth_service.dart';
+import 'package:flashcards/helpers/dialog_handler.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/form_input.dart';
+import 'package:flashcards/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -28,24 +30,30 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 32),
               _buildInputForm(emailController, passwordController),
               SizedBox(height: 32),
-              _buildAuthButton('Login', () async {
-                await authService.login(
+              LoadingButton(
+                text: "Login",
+                onPressed: () => authService.login(
                   emailController.text,
                   passwordController.text,
-                );
-              }),
+                ),
+              ),
               SizedBox(height: 16),
-              _buildAuthButton('Register', () async {
-                await authService.createAccount(
+              LoadingButton(
+                text: "Register",
+                onPressed: () => authService.createAccount(
                   emailController.text,
                   passwordController.text,
-                );
-              }),
+                ),
+              ),
               SizedBox(height: 48),
               _buildDivider(),
               SizedBox(height: 48),
               _buildSocialSitesLogin(() async {
-                await authService.loginWithGoogle();
+                try {
+                  await authService.loginWithGoogle();
+                } on Exception catch (e) {
+                  showErrorDialog(context, e.toString());
+                }
               }),
             ],
           ),
@@ -64,34 +72,15 @@ Form _buildInputForm(
       children: [
         FormInput(
           controller: emailController,
-          hintText: 'Email',
+          hintText: 'Email *',
         ),
         SizedBox(height: 8),
         FormInput(
           controller: passwordController,
-          hintText: 'Password',
+          hintText: 'Password *',
           obscureText: true,
         )
       ],
-    ),
-  );
-}
-
-SizedBox _buildAuthButton(String text, Function() onPressed) {
-  return SizedBox(
-    width: double.infinity,
-    child: ElevatedButton(
-      onPressed: onPressed,
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.black),
-        padding: MaterialStateProperty.all(
-          EdgeInsets.symmetric(vertical: 16),
-        ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white),
-      ),
     ),
   );
 }
