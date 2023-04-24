@@ -1,5 +1,6 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
+import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flashcards/features/sets/models/save_state.dart';
 import 'package:flashcards/features/sets/services/set_upsert_service.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
@@ -7,8 +8,6 @@ import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
-import '../models/card_set_model.dart';
 
 const _EMPTY_ERR_MSG = "This field cannot be empty";
 

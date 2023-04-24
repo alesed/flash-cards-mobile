@@ -1,13 +1,8 @@
 import 'package:flashcards/features/game/services/game_service.dart';
 import 'package:flashcards/locator.dart';
+import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-import 'package:uuid/uuid.dart';
-import '../../sets/models/card_model.dart' as model;
-import '../../../widgets/custom_navigation_drawer.dart';
-import '../../sets/models/card_model.dart';
 
 const _CARD_SIZE = 300.0;
 

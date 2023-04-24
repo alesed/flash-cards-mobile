@@ -2,7 +2,6 @@ import 'package:flashcards/features/game/models/answer_state.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 const _MAX_CARD_STACK_COUNT = 3;

@@ -1,10 +1,8 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/card_model.dart';
 import 'package:flashcards/features/sets/models/save_state.dart';
-import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 

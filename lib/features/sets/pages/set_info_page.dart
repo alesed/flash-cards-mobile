@@ -1,8 +1,6 @@
 import 'package:flashcards/features/common/widgets/scaffold_template.dart';
 import 'package:flashcards/features/sets/models/card_set_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class SetInfoPage extends StatelessWidget {
   CardSetModel setToShow;
