@@ -17,8 +17,6 @@ class LoadingButton extends StatefulWidget {
 }
 
 class _LoadingButtonState extends State<LoadingButton> {
-  bool isLoading = false;
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -41,7 +39,6 @@ class _LoadingButtonState extends State<LoadingButton> {
 
   void _handleOnPressed() async {
     bool errorOccured = false;
-    _setLoading(true);
     try {
       showLoadingDialog(context);
       await widget.onPressed();
@@ -53,13 +50,6 @@ class _LoadingButtonState extends State<LoadingButton> {
       if (!errorOccured) {
         hideDialog(context);
       }
-      _setLoading(false);
     }
-  }
-
-  void _setLoading(bool value) {
-    setState(() {
-      isLoading = value;
-    });
   }
 }
