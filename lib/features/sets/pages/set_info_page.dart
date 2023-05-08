@@ -11,15 +11,18 @@ class SetInfoPage extends StatelessWidget {
     return ScaffoldTemplate(
       title: "Set info",
       builder: () {
-        return Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Text(
-              setToShow.setName,
-              style: TextStyle(fontSize: 30),
-            ),
-            _buildCardList()
-          ],
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                setToShow.setName,
+                style: TextStyle(fontSize: 30),
+              ),
+              _buildCardList()
+            ],
+          ),
         );
       },
     );

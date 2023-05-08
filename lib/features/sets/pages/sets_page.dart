@@ -25,7 +25,7 @@ class SetsPage extends StatelessWidget {
               title: Text("Card sets"),
               bottom: const TabBar(tabs: [
                 Tab(
-                  text: "Own sets",
+                  text: "Private sets",
                 ),
                 Tab(
                   text: "Public sets",

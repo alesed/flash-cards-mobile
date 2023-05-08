@@ -21,10 +21,11 @@ class CardToShow {
   String textToShow;
   int order;
   CardModel originalCard;
-  CardToShow(
-      {required this.textToShow,
-      required this.order,
-      required this.originalCard});
+  CardToShow({
+    required this.textToShow,
+    required this.order,
+    required this.originalCard,
+  });
   CardToShow copyWith({String? textToShow}) {
     return CardToShow(
         textToShow: textToShow ?? this.textToShow,
@@ -34,10 +35,14 @@ class CardToShow {
 }
 
 class GameService {
+  final SetsManagerService _setsManagerService = getIt<SetsManagerService>();
+
   bool _showingCardFront = true;
   List<AnsweredCard> answeredCardList = [];
   List<CardModel> allCardsList = [];
   final cardsToShow = BehaviorSubject<List<CardToShow>>();
+  int dislikedCardCount = 0;
+  bool finished = false;
 
   void newGameWithFailedCards() {
     final failedCards = answeredCardList
@@ -56,11 +61,12 @@ class GameService {
       return CardToShow(
           textToShow: card.frontText, order: index + 1, originalCard: card);
     }).toList());
+    dislikedCardCount = 0;
+    finished = false;
   }
 
   void newGame(String setId) async {
-    final cardSet = await getIt.get<SetsManagerService>().getSetWithId(
-        setId); //TODO: modifies original list, will be solved later, when using db...
+    final cardSet = await _setsManagerService.getSetWithId(setId);
     _initNewGame(cardSet.cardList);
   }
 
@@ -109,6 +115,7 @@ class GameService {
         cardModel: allCardsList.firstWhere((element) => element.id == cardId),
         answerState: AnswerState.disliked,
         timeToAnswer: 1.0));
+    dislikedCardCount++;
     removeRestingCard(cardId);
   }
 }

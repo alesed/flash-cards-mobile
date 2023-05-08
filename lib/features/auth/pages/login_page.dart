@@ -103,19 +103,21 @@ Row _buildDivider() {
   );
 }
 
-Row _buildSocialSitesLogin(Function() googleLoginFn) {
+Row _buildSocialSitesLogin(Future<void> Function() googleLoginFn) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: [
       SizedBox(
         width: 106,
         height: 106,
-        child: ElevatedButton(
+        child: LoadingButton(
           onPressed: googleLoginFn,
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.grey.shade300),
+          customWidget: LoadingButtonWidget(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.grey.shade300),
+            ),
+            child: Image.asset('assets/images/google.png', width: 64),
           ),
-          child: Image.asset('assets/images/google.png', width: 64),
         ),
       ),
     ],

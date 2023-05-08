@@ -1,4 +1,5 @@
 import 'package:flashcards/features/game/services/game_service.dart';
+import 'package:flashcards/features/sets/services/sets_manager_service.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,11 @@ const _CARD_SIZE = 300.0;
 
 class GamePage extends StatefulWidget {
   final String setId;
+  final String setName;
   const GamePage({
     super.key,
     required this.setId,
+    required this.setName,
   });
 
   @override
@@ -19,6 +22,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   final _gameService = getIt.get<GameService>();
+  final _setsManagerService = getIt.get<SetsManagerService>();
 
   MatchEngine? _matchEngine;
   @override
@@ -31,7 +35,7 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Practising \"Biology\""),
+          title: Text("Practising \"${widget.setName}\""),
         ),
         drawer: CustomNavigationDrawer(),
         body: StreamBuilder<List<CardToShow>>(
@@ -61,29 +65,45 @@ class _GamePageState extends State<GamePage> {
             }));
   }
 
-  Center _buildFinishWidget() {
-    return Center(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Spacer(),
-        Text("Finished!", style: TextStyle(fontSize: 20)),
-        Spacer(),
-        ElevatedButton(
-            onPressed: () => _gameService.newGame(widget.setId),
-            child: Text("Play again with all cards.")),
-        if (_gameService.dislikedCardsCount > 0)
-          ElevatedButton(
-              onPressed: () => _gameService.newGameWithFailedCards(),
-              child: Text("Play again with failed cards")),
-        Text(
-            "Correctly answered cards: ${_gameService.likedCardsCount} / ${_gameService.setLength}"),
-        Spacer(),
-      ],
-    ));
+  FutureBuilder _buildFinishWidget() {
+    return FutureBuilder<void>(
+      future: updateStatsAfterFinished(),
+      builder: (context, snapshot) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Spacer(),
+              Text("Finished!", style: TextStyle(fontSize: 20)),
+              Spacer(),
+              ElevatedButton(
+                  onPressed: () => _gameService.newGame(widget.setId),
+                  child: Text("Play again with all cards.")),
+              if (_gameService.dislikedCardsCount > 0)
+                ElevatedButton(
+                    onPressed: () => _gameService.newGameWithFailedCards(),
+                    child: Text("Play again with failed cards")),
+              Text(
+                  "Correctly answered cards: ${_gameService.likedCardsCount} / ${_gameService.setLength}"),
+              Spacer(),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  Widget _buildPageLayout(List<SwipeItem> swipeItems) {
+  Future<void> updateStatsAfterFinished() async {
+    if (_gameService.finished) return;
+    await _setsManagerService.incrementPlaysCounter(widget.setId);
+    await _setsManagerService.updateSuccessRate(
+      widget.setId,
+      _gameService.dislikedCardCount,
+    );
+    _gameService.finished = true;
+  }
+
+  Center _buildPageLayout(List<SwipeItem> swipeItems) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -91,6 +111,14 @@ class _GamePageState extends State<GamePage> {
           SizedBox(
             height: _CARD_SIZE,
             child: SwipeCards(
+                likeTag: Icon(
+                  Icons.thumb_up,
+                  color: Colors.green,
+                ),
+                nopeTag: Icon(
+                  Icons.thumb_down,
+                  color: Colors.red,
+                ),
                 matchEngine: _matchEngine!,
                 onStackFinished:
                     () {}, // This is not used, because we are using stream builder and it is not working together...
