@@ -9,6 +9,11 @@ class DbService {
     return db.collection(collection.name).doc(id).set(data);
   }
 
+  Future<void> update(
+      Collection collection, String id, Map<String, dynamic> data) {
+    return db.collection(collection.name).doc(id).update(data);
+  }
+
   Stream<List<Map<String, dynamic>>> getCollectionStream(
       Collection collection) {
     return db

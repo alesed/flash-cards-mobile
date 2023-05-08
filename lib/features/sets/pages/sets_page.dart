@@ -1,9 +1,7 @@
 import 'package:flashcards/features/sets/models/accessibility.dart';
 import 'package:flashcards/features/sets/models/sets_filter.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
-import 'package:flashcards/features/sets/services/set_upsert_service.dart';
 import 'package:flashcards/features/sets/widgets/set_list.dart';
-import 'package:flashcards/locator.dart';
 import 'package:flashcards/widgets/custom_navigation_drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +25,7 @@ class SetsPage extends StatelessWidget {
               title: Text("Card sets"),
               bottom: const TabBar(tabs: [
                 Tab(
-                  text: "Own sets",
+                  text: "Private sets",
                 ),
                 Tab(
                   text: "Public sets",

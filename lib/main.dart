@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flashcards/features/auth/pages/auth_page.dart';
 import 'package:flashcards/firebase_options.dart';
 import 'package:flashcards/locator.dart';
+import 'package:flashcards/routes.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -16,13 +17,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: Scaffold(
-        body: AuthPage(),
-      ),
+      routerConfig: router,
     );
   }
 }
