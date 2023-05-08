@@ -37,7 +37,7 @@ final GoRouter router = GoRouter(
           builder: (context, state) => SetsUpsertPage(
             cardSetIdToModify: state.queryParameters['cardSetIdToModify'],
           ),
-        )
+        ),
       ],
     ),
   ],

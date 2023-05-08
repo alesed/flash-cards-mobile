@@ -22,21 +22,24 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text("Home"),
             leading: Icon(Icons.home),
             onTap: () {
-              context.go('/home');
+              _clearAllPages(context);
+              context.pushReplacement('/home');
             },
           ),
           ListTile(
             title: Text('Statistics'),
             leading: Icon(Icons.auto_graph),
             onTap: () {
-              context.go('/statistics');
+              _clearAllPages(context);
+              context.pushReplacement('/statistics');
             },
           ),
           ListTile(
             title: Text('Sets'),
             leading: Icon(Icons.rectangle_rounded),
             onTap: () {
-              context.go('/sets');
+              _clearAllPages(context);
+              context.pushReplacement('/sets');
             },
           ),
           ListTile(
@@ -53,12 +56,19 @@ class CustomNavigationDrawer extends StatelessWidget {
   }
 }
 
+void _clearAllPages(BuildContext context) {
+  while (context.canPop()) {
+    context.pop();
+  }
+}
+
 Future<void> _handleLogout(
   BuildContext context,
   AuthenticationService authService,
 ) async {
   await authService.logout();
   if (context.mounted) {
-    context.go('/login');
+    _clearAllPages(context);
+    context.pushReplacement('/');
   }
 }
