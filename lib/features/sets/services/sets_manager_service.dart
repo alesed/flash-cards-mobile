@@ -26,12 +26,13 @@ class SetsManagerService {
   }
 
   Stream<List<CardSetModel>> getFilteredSetsStream(SetsFilter setsFilter) {
-    return allSetsStream.map((allSetsList) => allSetsList
-        .where((setList) => setList.accessibility == setsFilter.accessibility)
-        .where((setList) => setsFilter.justOwn
-            ? setList.ownerId == _authService.currentUser!.uid
-            : true)
-        .toList());
+    return _dbService
+        .getFilteredSets(
+            setsFilter.justOwn ? _authService.currentUser!.uid : null,
+            setsFilter.accessibility?.name)
+        .map((jsonList) => jsonList
+            .map((jsonCardSet) => CardSetModel.fromJson(jsonCardSet))
+            .toList());
   }
 
   Future<void> deleteSet(String id) async {

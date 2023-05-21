@@ -73,12 +73,12 @@ class SetsUpsertPage extends StatelessWidget {
           case SaveState.saving:
             return CircularProgressIndicator();
           case SaveState.notSaved:
-            return GestureDetector(
-              onTap: () {
+            return IconButton(
+              onPressed: () {
                 setUpsertService.saveSet(setUpsertService.set);
                 context.go("/sets");
               },
-              child: Icon(Icons.save),
+              icon: Icon(Icons.save),
             );
         }
       },
