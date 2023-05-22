@@ -15,10 +15,19 @@ final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
-      redirect: (context, state) =>
-          getIt.get<AuthenticationService>().currentUser == null
-              ? '/login'
-              : '/home',
+      redirect: (context, state) {
+        final bool userAuthenticated =
+            getIt.get<AuthenticationService>().currentUser != null;
+        final bool onLoginPage = state.location == '/';
+
+        if (!userAuthenticated && !onLoginPage) {
+          return '/login';
+        }
+        if (userAuthenticated && onLoginPage) {
+          return '/home';
+        }
+        return null;
+      },
       builder: (context, state) => LoginPage(),
       routes: <RouteBase>[
         GoRoute(
