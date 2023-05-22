@@ -76,7 +76,7 @@ class SetsUpsertPage extends StatelessWidget {
             return IconButton(
               onPressed: () {
                 setUpsertService.saveSet(setUpsertService.set);
-                context.go("/sets");
+                context.pushReplacement("/sets");
               },
               icon: Icon(Icons.save),
             );
