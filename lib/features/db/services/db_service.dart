@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flashcards/features/db/models/collection.dart';
+import 'package:flashcards/features/sets/models/sets_filter.dart';
 
 class DbService {
   final db = FirebaseFirestore.instance;
@@ -12,6 +13,17 @@ class DbService {
   Future<void> update(
       Collection collection, String id, Map<String, dynamic> data) {
     return db.collection(collection.name).doc(id).update(data);
+  }
+
+  Stream<List<Map<String, dynamic>>> getFilteredSets(
+      String? ownerId, String? accessibility) {
+    var collectionRef = db
+        .collection(Collection.cardSets.name)
+        .where("accessibility", isEqualTo: accessibility)
+        .where("owner_id", isEqualTo: ownerId);
+    return collectionRef
+        .snapshots()
+        .map((event) => event.docs.map((e) => e.data()).toList());
   }
 
   Stream<List<Map<String, dynamic>>> getCollectionStream(

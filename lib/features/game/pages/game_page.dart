@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
 const _CARD_SIZE = 300.0;
+const _THUMB_ICON_SIZE = 130.0;
 
 class GamePage extends StatefulWidget {
   final String setId;
@@ -114,11 +115,10 @@ class _GamePageState extends State<GamePage> {
                 likeTag: Icon(
                   Icons.thumb_up,
                   color: Colors.green,
+                  size: _THUMB_ICON_SIZE,
                 ),
-                nopeTag: Icon(
-                  Icons.thumb_down,
-                  color: Colors.red,
-                ),
+                nopeTag: Icon(Icons.thumb_down,
+                    color: Colors.red, size: _THUMB_ICON_SIZE),
                 matchEngine: _matchEngine!,
                 onStackFinished:
                     () {}, // This is not used, because we are using stream builder and it is not working together...
@@ -142,16 +142,18 @@ class _GamePageState extends State<GamePage> {
       children: [
         Spacer(),
         ElevatedButton(
-            onPressed: () {
-              _matchEngine?.currentItem?.like();
-            },
-            child: Text("Yes")),
-        Spacer(),
-        ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               _matchEngine?.currentItem?.nope();
             },
             child: Text("No")),
+        Spacer(),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () {
+              _matchEngine?.currentItem?.like();
+            },
+            child: Text("Yes")),
         Spacer(),
       ],
     );

@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flashcards/features/auth/pages/auth_page.dart';
 import 'package:flashcards/firebase_options.dart';
 import 'package:flashcards/locator.dart';
 import 'package:flashcards/routes.dart';
