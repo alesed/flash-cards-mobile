@@ -22,7 +22,6 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text("Home"),
             leading: Icon(Icons.home),
             onTap: () {
-              _clearAllPages(context);
               context.pushReplacement('/home');
             },
           ),
@@ -30,7 +29,6 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Statistics'),
             leading: Icon(Icons.auto_graph),
             onTap: () {
-              _clearAllPages(context);
               context.pushReplacement('/statistics');
             },
           ),
@@ -38,7 +36,6 @@ class CustomNavigationDrawer extends StatelessWidget {
             title: Text('Sets'),
             leading: Icon(Icons.rectangle_rounded),
             onTap: () {
-              _clearAllPages(context);
               context.pushReplacement('/sets');
             },
           ),
@@ -56,19 +53,12 @@ class CustomNavigationDrawer extends StatelessWidget {
   }
 }
 
-void _clearAllPages(BuildContext context) {
-  while (context.canPop()) {
-    context.pop();
-  }
-}
-
 Future<void> _handleLogout(
   BuildContext context,
   AuthenticationService authService,
 ) async {
   await authService.logout();
   if (context.mounted) {
-    _clearAllPages(context);
     context.pushReplacement('/');
   }
 }

@@ -1,19 +1,25 @@
-import 'package:flashcards/features/auth/pages/auth_page.dart';
 import 'package:flashcards/features/auth/pages/login_page.dart';
+import 'package:flashcards/features/auth/services/auth_service.dart';
 import 'package:flashcards/features/home/pages/home_page.dart';
 import 'package:flashcards/features/sets/pages/sets_page.dart';
 import 'package:flashcards/features/sets/pages/sets_upsert_page.dart';
 import 'package:flashcards/features/statistics/pages/statistics_page.dart';
+import 'package:flashcards/helpers/go_router_refresh_stream.dart';
+import 'package:flashcards/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter router = GoRouter(
+  refreshListenable:
+      GoRouterRefreshStream(getIt.get<AuthenticationService>().authState),
   routes: <RouteBase>[
     GoRoute(
       path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return AuthPage();
-      },
+      redirect: (context, state) =>
+          getIt.get<AuthenticationService>().currentUser == null
+              ? '/login'
+              : '/home',
+      builder: (context, state) => LoginPage(),
       routes: <RouteBase>[
         GoRoute(
           path: 'login',
